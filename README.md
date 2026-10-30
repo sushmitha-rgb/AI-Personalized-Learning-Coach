@@ -1,19 +1,28 @@
-# AI Personalized Learning Coach
+# AI-Personalized-Learning-Coach
 
-Personalized study plan • Topic quizzes • Progress tracking
+An AI-powered tutor that creates personalized 7-day learning plans, quizzes, and tracks progress.
 
-## Features FR-01 to FR-12
-- Learner Setup (Subject, Goal, Level, Duration, Daily Time)
-- Gemini generates personalized study plan (JSON)
-- Quiz generation per topic
-- Score calculated in Python (not LLM)
-- Progress Dashboard with weak topics
-- SQLite persistence
+## Features
+- Generate personalized study plan with Gemini AI
+- Interactive Practice Quiz with scoring
+- Progress Dashboard
+- SQLite database for user progress
 
-## Setup
-1. pip install -r requirements.txt
-2. Create .env with GEMINI_API_KEY=your_key
-3. streamlit run app.py
+## How to Run
+1. Clone: `git clone https://github.com/sushmitha-rgb/AI-Personalized-Learning-Coach.git`
+2. Install: `pip install -r requirements.txt`
+3. Add API Key: Create `.env` file with `GOOGLE_API_KEY=your_key`
+4. Run: `streamlit run app.py`
 
-## Tech
-Streamlit, Gemini 1.5 Flash, SQLite
+## Screenshots
+- Plan Generation Working
+- Study Plan Page
+- Quiz Page
+- Progress Dashboard
+
+## Fixed Issues
+- Fixed ImportError: validate_plan from learning_plan
+- Fixed database import errors
+- Universal validator for all Gemini JSON formats
+
+Built with Streamlit + Google Gemini 1.5 Flash
