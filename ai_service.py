@@ -106,9 +106,56 @@ def generate_quiz(topic, level="Beginner", subject="", num_questions=5):
     text = generate_text(prompt)
     text = text.replace("```json", "").replace("```", "").strip()
     data = json.loads(text)
-    if isinstance(data, dict) and "questions" in data:
-        return data["questions"]
-    return data
+    questions = data.get("questions", []) if isinstance(data, dict) else data
+    if not isinstance(questions, list):
+        raise ValueError("Quiz response must contain a list of questions")
+
+    normalized_questions = []
+    for item in questions:
+        if not isinstance(item, dict):
+            continue
+
+        question = item.get("question") or item.get("q")
+        options = item.get("options", [])
+        if not question or not isinstance(options, list) or not options:
+            continue
+
+        labeled_options = []
+        for index, option in enumerate(options):
+            option_text = str(option)
+            label = chr(ord("A") + index)
+            if not re.match(r"^[A-D](?:[.) :]\s*|\s+)", option_text, re.IGNORECASE):
+                option_text = f"{label}. {option_text}"
+            labeled_options.append(option_text)
+
+        answer = item.get("correct_answer", item.get("answer"))
+        if isinstance(answer, int) or (isinstance(answer, str) and answer.isdigit()):
+            answer_index = int(answer)
+            correct_answer = chr(ord("A") + answer_index) if 0 <= answer_index < len(options) else ""
+        elif isinstance(answer, str):
+            answer_match = re.match(r"^\s*([A-D])(?:[.) :]\s*|\s+|$)", answer, re.IGNORECASE)
+            if answer_match:
+                correct_answer = answer_match.group(1).upper()
+            else:
+                matching_option = next(
+                    (index for index, option in enumerate(options) if str(option) == answer),
+                    -1,
+                )
+                correct_answer = chr(ord("A") + matching_option) if matching_option >= 0 else ""
+        else:
+            correct_answer = ""
+
+        normalized_questions.append({
+            "question": question,
+            "options": labeled_options,
+            "correct_answer": correct_answer,
+            "explanation": item.get("explanation", ""),
+            "difficulty": item.get("difficulty", "medium"),
+        })
+
+    if not normalized_questions:
+        raise ValueError("Quiz response did not contain any valid questions")
+    return normalized_questions
 def generate_feedback(topic, score, total, weak_topics=None):
     prompt = f"""
     You are a friendly learning coach.
