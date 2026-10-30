@@ -3,3 +3,4 @@ __pycache__/
 *.db
 learning_coach.db
 venv/
+.venv/
